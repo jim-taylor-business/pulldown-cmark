@@ -356,6 +356,34 @@ where
             Tag::Strong => self.write("<strong>"),
             Tag::Strikethrough => self.write("<del>"),
             Tag::Link {
+                link_type: LinkType::LemmyCommunity,
+                dest_url,
+                title,
+                id: _,
+            } => {
+                self.write("<a href=\"//c/")?;
+                escape_href(&mut self.writer, &dest_url)?;
+                if !title.is_empty() {
+                    self.write("\" title=\"")?;
+                    escape_html(&mut self.writer, &title)?;
+                }
+                self.write("\">")
+            }
+            Tag::Link {
+                link_type: LinkType::LemmyUser,
+                dest_url,
+                title,
+                id: _,
+            } => {
+                self.write("<a href=\"//u/")?;
+                escape_href(&mut self.writer, &dest_url)?;
+                if !title.is_empty() {
+                    self.write("\" title=\"")?;
+                    escape_html(&mut self.writer, &title)?;
+                }
+                self.write("\">")
+            }
+            Tag::Link {
                 link_type: LinkType::Email,
                 dest_url,
                 title,

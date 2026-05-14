@@ -74,6 +74,8 @@ pub(crate) enum ItemBody {
     // bool indicates whether or not the preceding section could be a reference
     MaybeLinkClose(bool),
     MaybeImage,
+    MaybeLemmyUser,
+    MaybeLinkLoose,
 
     // These are inline items after resolution.
     Emphasis,
@@ -148,6 +150,8 @@ impl ItemBody {
                 | MaybeLinkOpen
                 | MaybeLinkClose(..)
                 | MaybeImage
+                | MaybeLemmyUser
+                | MaybeLinkLoose
         )
     }
     fn is_inline(&self) -> bool {
@@ -162,6 +166,8 @@ impl ItemBody {
                 | MaybeLinkOpen
                 | MaybeLinkClose(..)
                 | MaybeImage
+                | MaybeLemmyUser
+                | MaybeLinkLoose
                 | Emphasis
                 | Strong
                 | Strikethrough
@@ -639,7 +645,108 @@ impl<'input> ParserInner<'input> {
                         ty: LinkStackTy::Link,
                     });
                 }
+                ItemBody::MaybeLemmyUser => {
+                    let next = self.tree[cur_ix].next;
+                    let community_link = if let Some(next_ix) = next {
+                        scan_lemmy_link(block_text, self.tree[next_ix].item.start)
+                    } else {
+                        None
+                    };
+                    if let Some((ix, uri)) = community_link {
+                        let node = scan_nodes_to_ix(&self.tree, next, ix);
+                        let text_node = self.tree.create_node(Item {
+                            start: self.tree[cur_ix].item.start + 1,
+                            end: ix - 1,
+                            body: ItemBody::Text {
+                                backslash_escaped: false,
+                            },
+                        });
+                        let link_ix = self.allocs.allocate_link(
+                            LinkType::LemmyUser,
+                            uri,
+                            "".into(),
+                            "".into(),
+                        );
+                        self.tree[cur_ix].item.body = ItemBody::Link(link_ix);
+                        self.tree[cur_ix].item.end = ix;
+                        self.tree[cur_ix].next = node;
+                        self.tree[cur_ix].child = Some(text_node);
+                        prev = cur;
+                        cur = node;
+                        if let Some(node_ix) = cur {
+                            self.tree[node_ix].item.start = max(self.tree[node_ix].item.start, ix);
+                        }
+                        continue;
+                    }
+                }
+                ItemBody::MaybeLinkLoose => {
+                    let next = self.tree[cur_ix].next;
+                    let community_link = if let Some(next_ix) = next {
+                        scan_loose_uri(block_text, self.tree[next_ix].item.start)
+                    } else {
+                        None
+                    };
+                    if let Some((ix, uri)) = community_link {
+                        let node = scan_nodes_to_ix(&self.tree, next, ix);
+                        let text_node = self.tree.create_node(Item {
+                            start: self.tree[cur_ix].item.start + 1,
+                            end: ix - 1,
+                            body: ItemBody::Text {
+                                backslash_escaped: false,
+                            },
+                        });
+                        let link_ix = self.allocs.allocate_link(
+                            LinkType::Autolink,
+                            uri,
+                            "".into(),
+                            "".into(),
+                        );
+                        self.tree[cur_ix].item.body = ItemBody::Link(link_ix);
+                        self.tree[cur_ix].item.end = ix;
+                        self.tree[cur_ix].next = node;
+                        self.tree[cur_ix].child = Some(text_node);
+                        prev = cur;
+                        cur = node;
+                        if let Some(node_ix) = cur {
+                            self.tree[node_ix].item.start = max(self.tree[node_ix].item.start, ix);
+                        }
+                        continue;
+                    }
+                }
                 ItemBody::MaybeImage => {
+                    let next = self.tree[cur_ix].next;
+                    let community_link = if let Some(next_ix) = next {
+                        scan_lemmy_link(block_text, self.tree[next_ix].item.start)
+                    } else {
+                        None
+                    };
+                    if let Some((ix, uri)) = community_link {
+                        let node = scan_nodes_to_ix(&self.tree, next, ix);
+                        let text_node = self.tree.create_node(Item {
+                            start: self.tree[cur_ix].item.start + 1,
+                            end: ix - 1,
+                            body: ItemBody::Text {
+                                backslash_escaped: false,
+                            },
+                        });
+                        let link_ix = self.allocs.allocate_link(
+                            LinkType::LemmyCommunity,
+                            uri,
+                            "".into(),
+                            "".into(),
+                        );
+                        self.tree[cur_ix].item.body = ItemBody::Link(link_ix);
+                        self.tree[cur_ix].item.end = ix;
+                        self.tree[cur_ix].next = node;
+                        self.tree[cur_ix].child = Some(text_node);
+                        prev = cur;
+                        cur = node;
+                        if let Some(node_ix) = cur {
+                            self.tree[node_ix].item.start = max(self.tree[node_ix].item.start, ix);
+                        }
+                        continue;
+                    }
+                    // else {
                     self.tree[cur_ix].item.body = ItemBody::Text {
                         backslash_escaped: false,
                     };
@@ -657,6 +764,7 @@ impl<'input> ParserInner<'input> {
                         node: cur_ix,
                         ty: LinkStackTy::Image,
                     });
+                    // }
                 }
                 ItemBody::MaybeLinkClose(could_be_ref) => {
                     self.tree[cur_ix].item.body = ItemBody::Text {
@@ -2464,7 +2572,7 @@ mod test {
     }
 
     #[test]
-    fn issue_1030() {
+    fn issue_1030qqqqqqqqqqqqqqqqqqq() {
         let mut opts = Options::empty();
         opts.insert(Options::ENABLE_WIKILINKS);
 

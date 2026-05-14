@@ -10,7 +10,9 @@ fn super_sub_test_1() {
     let expected = r##"<p><sup>This is super</sup> <sub>This is sub</sub></p>
 "##;
 
-    test_markdown_html(original, expected, false, false, false, true, false, false, false);
+    test_markdown_html(
+        original, expected, false, false, false, true, false, false, false,
+    );
 }
 
 #[test]
@@ -20,7 +22,9 @@ fn super_sub_test_2() {
     let expected = r##"<p><sub>This is stricken out</sub></p>
 "##;
 
-    test_markdown_html(original, expected, false, false, false, true, false, false, false);
+    test_markdown_html(
+        original, expected, false, false, false, true, false, false, false,
+    );
 }
 
 #[test]
@@ -30,7 +34,9 @@ fn super_sub_test_3() {
     let expected = r##"<p><sub>This is ~stricken</sub></p>
 "##;
 
-    test_markdown_html(original, expected, false, false, false, true, false, false, false);
+    test_markdown_html(
+        original, expected, false, false, false, true, false, false, false,
+    );
 }
 
 #[test]
@@ -40,7 +46,9 @@ fn super_sub_test_4() {
     let expected = r##"<p><sub>This</sub>is<sub>nothing</sub></p>
 "##;
 
-    test_markdown_html(original, expected, false, false, false, true, false, false, false);
+    test_markdown_html(
+        original, expected, false, false, false, true, false, false, false,
+    );
 }
 
 #[test]
@@ -50,7 +58,9 @@ fn super_sub_test_5() {
     let expected = r##"<p><sub>This ~~is not stricken.</sub></p>
 "##;
 
-    test_markdown_html(original, expected, false, false, false, true, false, false, false);
+    test_markdown_html(
+        original, expected, false, false, false, true, false, false, false,
+    );
 }
 
 #[test]
@@ -60,7 +70,9 @@ fn super_sub_test_6() {
     let expected = r##"<p><del>This ~is</del> stricken.~</p>
 "##;
 
-    test_markdown_html(original, expected, false, false, false, true, false, false, false);
+    test_markdown_html(
+        original, expected, false, false, false, true, false, false, false,
+    );
 }
 
 #[test]
@@ -70,7 +82,9 @@ fn super_sub_test_7() {
     let expected = r##"<p><sub>This ~~is stricken</sub> but this is not~~</p>
 "##;
 
-    test_markdown_html(original, expected, false, false, false, true, false, false, false);
+    test_markdown_html(
+        original, expected, false, false, false, true, false, false, false,
+    );
 }
 
 #[test]
@@ -83,7 +97,9 @@ y=x^2^a+xb+c
 <p>y=x<sup>2</sup>a+xb+c</p>
 "##;
 
-    test_markdown_html(original, expected, false, false, false, true, false, false, false);
+    test_markdown_html(
+        original, expected, false, false, false, true, false, false, false,
+    );
 }
 
 #[test]
@@ -96,7 +112,9 @@ fn super_sub_test_9() {
 <p>^bar^^</p>
 "##;
 
-    test_markdown_html(original, expected, false, false, false, true, false, false, false);
+    test_markdown_html(
+        original, expected, false, false, false, true, false, false, false,
+    );
 }
 
 #[test]
@@ -109,5 +127,51 @@ fn super_sub_test_10() {
 <p><em>foo_</em>_bar*</p>
 "##;
 
-    test_markdown_html(original, expected, false, false, false, true, false, false, false);
+    test_markdown_html(
+        original, expected, false, false, false, true, false, false, false,
+    );
+}
+
+#[test]
+fn wwwwwwwwwwwww() {
+    let original = r##"This is !super@this.is.sub
+"##;
+    let expected = r##"<p>This is <a href="super@this.is.sub">super@this.is.sub</a></p>
+"##;
+    test_markdown_html(
+        original, expected, false, false, false, true, false, false, false,
+    );
+}
+
+#[test]
+fn hhhhhhhhh() {
+    let original = r##"This is @super@this.is.sub
+"##;
+    let expected = r##"<p>This is <a href="super@this.is.sub">super@this.is.sub</a></p>
+"##;
+    test_markdown_html(
+        original, expected, false, false, false, true, false, false, false,
+    );
+}
+
+#[test]
+fn llllllllllll() {
+    let original = r##"This is http://this.is.sub
+"##;
+    let expected = r##"<p>This is <a href="http://this.is.sub">http://this.is.sub</a></p>
+"##;
+    test_markdown_html(
+        original, expected, false, false, false, true, false, false, false,
+    );
+}
+
+#[test]
+fn sssssssssssssssss() {
+    let original = r##"This is http://this.is.sub
+"##;
+    let expected = r##"<p>This is <a href="http://this.is.sub">http://this.is.sub</a></p>
+"##;
+    test_markdown_html(
+        original, expected, false, false, false, true, false, false, false,
+    );
 }

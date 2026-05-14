@@ -532,6 +532,10 @@ pub enum LinkType {
         /// * `false` - `[[foo]]`
         has_pothole: bool,
     },
+    /// Lemmy community like `<p>Community: !lemmyapps@lemmy.world (Does it link to the community) (1)</p>`
+    LemmyCommunity,
+    /// Lemmy user like `<p>User: @gedaliyah@lemmy.world (Does it link to the user?) (1)</p>`
+    LemmyUser,
 }
 
 impl LinkType {

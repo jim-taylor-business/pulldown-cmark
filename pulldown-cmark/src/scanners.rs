@@ -1378,7 +1378,7 @@ pub(crate) fn scan_autolink(text: &str, start_ix: usize) -> Option<(usize, CowSt
 }
 
 /// Returns (next_byte_offset, uri)
-fn scan_uri(text: &str, start_ix: usize) -> Option<(usize, CowStr<'_>)> {
+pub(crate) fn scan_uri(text: &str, start_ix: usize) -> Option<(usize, CowStr<'_>)> {
     let bytes = &text.as_bytes()[start_ix..];
 
     // scheme's first byte must be an ascii letter
@@ -1417,8 +1417,56 @@ fn scan_uri(text: &str, start_ix: usize) -> Option<(usize, CowStr<'_>)> {
     None
 }
 
+/// Returns (next_byte_offset, uri)
+pub(crate) fn scan_loose_uri(text: &str, start_ix: usize) -> Option<(usize, CowStr<'_>)> {
+    let bytes = &text.as_bytes()[start_ix..];
+
+    // scheme's first byte must be an ascii letter
+    if bytes.is_empty() || !is_ascii_alpha(bytes[0]) {
+        return None;
+    }
+
+    let mut i = 1;
+
+    while i < bytes.len() {
+        let c = bytes[i];
+        i += 1;
+        match c {
+            c if is_ascii_alphanumeric(c) => (),
+            b'.' | b'-' | b'+' => (),
+            b':' => break,
+            _ => return None,
+        }
+    }
+
+    // scheme length must be between 2 and 32 characters long. scheme
+    // must be followed by colon
+    if !(3..=33).contains(&i) {
+        return None;
+    }
+
+    while i < bytes.len() {
+        match bytes[i] {
+            // b'>' => return Some((start_ix + i + 1, text[start_ix..(start_ix + i)].into())),
+            b'\0'..=b' ' | b'<' => {
+                return Some((
+                    start_ix + i + 1,
+                    text[(start_ix - 1)..(start_ix + i)].into(),
+                ))
+            }
+            _ => (),
+        }
+        i += 1;
+    }
+
+    return Some((
+        start_ix + i + 1,
+        text[(start_ix - 1)..(start_ix + i)].into(),
+    ));
+}
+
 /// Returns (next_byte_offset, email)
-fn scan_email(text: &str, start_ix: usize) -> Option<(usize, CowStr<'_>)> {
+pub(crate) fn scan_email(text: &str, start_ix: usize) -> Option<(usize, CowStr<'_>)> {
     // using a regex library would be convenient, but doing it by hand is not too bad
     let bytes = &text.as_bytes()[start_ix..];
     let mut i = 0;
@@ -1465,6 +1513,58 @@ fn scan_email(text: &str, start_ix: usize) -> Option<(usize, CowStr<'_>)> {
     if bytes.get(i) != Some(&b'>') {
         return None;
     }
+
+    Some((start_ix + i + 1, text[start_ix..(start_ix + i)].into()))
+}
+
+/// Returns (next_byte_offset, email)
+pub(crate) fn scan_lemmy_link(text: &str, start_ix: usize) -> Option<(usize, CowStr<'_>)> {
+    // using a regex library would be convenient, but doing it by hand is not too bad
+    let bytes = &text.as_bytes()[start_ix..];
+    let mut i = 0;
+
+    while i < bytes.len() {
+        let c = bytes[i];
+        i += 1;
+        match c {
+            c if is_ascii_alphanumeric(c) => (),
+            b'.' | b'!' | b'#' | b'$' | b'%' | b'&' | b'\'' | b'*' | b'+' | b'/' | b'=' | b'?'
+            | b'^' | b'_' | b'`' | b'{' | b'|' | b'}' | b'~' | b'-' => (),
+            b'@' if i > 1 => break,
+            _ => return None,
+        }
+    }
+
+    loop {
+        let label_start_ix = i;
+        let mut fresh_label = true;
+
+        while i < bytes.len() {
+            match bytes[i] {
+                c if is_ascii_alphanumeric(c) => (),
+                b'-' if fresh_label => {
+                    return None;
+                }
+                b'-' => (),
+                _ => break,
+            }
+            fresh_label = false;
+            i += 1;
+        }
+
+        if i == label_start_ix || i - label_start_ix > 63 || bytes[i - 1] == b'-' {
+            return None;
+        }
+
+        if bytes.get(i) != Some(&b'.') {
+            break;
+        }
+        i += 1;
+    }
+
+    // if bytes.get(i) != Some(&b'>') {
+    //     return None;
+    // }
 
     Some((start_ix + i + 1, text[start_ix..(start_ix + i)].into()))
 }

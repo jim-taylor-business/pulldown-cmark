@@ -1188,6 +1188,98 @@ impl<'a, 'b> FirstPass<'a, 'b> {
                     begin_text = ix + 2;
                     LoopInstruction::ContinueAndSkip(1)
                 }
+                b'!' if bytes.get(ix + 1) != Some(&b'[') => {
+                    self.tree.append_text(begin_text, ix, backslash_escaped);
+                    backslash_escaped = false;
+                    self.tree.append(Item {
+                        start: ix,
+                        end: ix + 1,
+                        body: ItemBody::MaybeImage,
+                    });
+                    begin_text = ix + 1;
+                    LoopInstruction::ContinueAndSkip(1)
+                }
+                b'@' => {
+                    if ix == 0 {
+                        self.tree.append_text(begin_text, ix, backslash_escaped);
+                        backslash_escaped = false;
+                        self.tree.append(Item {
+                            start: ix,
+                            end: ix + 1,
+                            body: ItemBody::MaybeLemmyUser,
+                        });
+                        begin_text = ix + 1;
+                        LoopInstruction::ContinueAndSkip(1)
+                    } else {
+                        if let Some(c) = bytes.get(ix - 1) {
+                            let d = c.clone();
+                            if is_ascii_whitespace(d) {
+                                self.tree.append_text(begin_text, ix, backslash_escaped);
+                                backslash_escaped = false;
+                                self.tree.append(Item {
+                                    start: ix,
+                                    end: ix + 1,
+                                    body: ItemBody::MaybeLemmyUser,
+                                });
+                                begin_text = ix + 1;
+                                LoopInstruction::ContinueAndSkip(1)
+                            } else {
+                                LoopInstruction::ContinueAndSkip(0)
+                            }
+                        } else {
+                            LoopInstruction::ContinueAndSkip(0)
+                        }
+                    }
+                }
+                b'h' => {
+                    // if ix < 4 {
+                    //     LoopInstruction::ContinueAndSkip(0)
+                    // } else {
+                    // kind.eq_ignore_ascii_case("spoiler")
+                    if Some(&b't').eq(&bytes.get(ix + 1))
+                        && Some(&b't').eq(&bytes.get(ix + 2))
+                        && Some(&b'p').eq(&bytes.get(ix + 3))
+                    {
+                        if Some(&b's').eq(&bytes.get(ix + 4)) {
+                            if Some(&b':').eq(&bytes.get(ix + 5))
+                                && Some(&b'/').eq(&bytes.get(ix + 6))
+                                && Some(&b'/').eq(&bytes.get(ix + 7))
+                            {
+                                self.tree.append_text(begin_text, ix, backslash_escaped);
+                                backslash_escaped = false;
+                                self.tree.append(Item {
+                                    start: ix,
+                                    end: ix + 1,
+                                    body: ItemBody::MaybeLinkLoose,
+                                });
+                                begin_text = ix + 1;
+                                LoopInstruction::ContinueAndSkip(1)
+                            } else {
+                                LoopInstruction::ContinueAndSkip(0)
+                            }
+                        } else {
+                            if Some(&b':').eq(&bytes.get(ix + 4))
+                                && Some(&b'/').eq(&bytes.get(ix + 5))
+                                && Some(&b'/').eq(&bytes.get(ix + 6))
+                            {
+                                self.tree.append_text(begin_text, ix, backslash_escaped);
+                                backslash_escaped = false;
+                                self.tree.append(Item {
+                                    start: ix - 1,
+                                    end: ix - 1,
+                                    body: ItemBody::MaybeLinkLoose,
+                                });
+                                begin_text = ix + 1;
+                                LoopInstruction::ContinueAndSkip(1)
+                            } else {
+                                LoopInstruction::ContinueAndSkip(0)
+                            }
+                        }
+                    } else {
+                        LoopInstruction::ContinueAndSkip(0)
+                    }
+                    // }
+                }
                 b'[' => {
                     self.tree.append_text(begin_text, ix, backslash_escaped);
                     backslash_escaped = false;
@@ -2479,7 +2571,7 @@ fn create_lut(options: &Options) -> LookupTable {
 fn special_bytes(options: &Options) -> [bool; 256] {
     let mut bytes = [false; 256];
     let standard_bytes = [
-        b'\n', b'\r', b'*', b'_', b'&', b'\\', b'[', b']', b'<', b'!', b'`',
+        b'\n', b'\r', b'*', b'_', b'&', b'\\', b'[', b']', b'<', b'!', b'`', b'@', b'h',
     ];
 
     for &byte in &standard_bytes {
