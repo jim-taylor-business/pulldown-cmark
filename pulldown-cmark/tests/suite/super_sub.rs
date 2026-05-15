@@ -175,3 +175,14 @@ fn sssssssssssssssss() {
         original, expected, false, false, false, true, false, false, false,
     );
 }
+
+#[test]
+fn tttttttt() {
+    let original = r##"This is http://this.is.sub yay!
+"##;
+    let expected = r##"<p>This is <a href="http://this.is.sub">http://this.is.sub</a> yay!</p>
+"##;
+    test_markdown_html(
+        original, expected, false, false, false, true, false, false, false,
+    );
+}

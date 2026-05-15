@@ -2572,7 +2572,7 @@ mod test {
     }
 
     #[test]
-    fn issue_1030qqqqqqqqqqqqqqqqqqq() {
+    fn issue_1030() {
         let mut opts = Options::empty();
         opts.insert(Options::ENABLE_WIKILINKS);
 

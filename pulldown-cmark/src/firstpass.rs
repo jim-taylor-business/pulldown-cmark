@@ -1188,7 +1188,7 @@ impl<'a, 'b> FirstPass<'a, 'b> {
                     begin_text = ix + 2;
                     LoopInstruction::ContinueAndSkip(1)
                 }
-                b'!' if bytes.get(ix + 1) != Some(&b'[') => {
+                b'!' if bytes.get(ix + 1) != Some(&b'[') && bytes.get(ix + 1) != None => {
                     self.tree.append_text(begin_text, ix, backslash_escaped);
                     backslash_escaped = false;
                     self.tree.append(Item {
