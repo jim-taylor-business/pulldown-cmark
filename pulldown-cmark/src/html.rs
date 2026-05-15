@@ -361,7 +361,7 @@ where
                 title,
                 id: _,
             } => {
-                self.write("<a href=\"//c/")?;
+                self.write("<a href=\"/c/")?;
                 escape_href(&mut self.writer, &dest_url)?;
                 if !title.is_empty() {
                     self.write("\" title=\"")?;
@@ -375,7 +375,7 @@ where
                 title,
                 id: _,
             } => {
-                self.write("<a href=\"//u/")?;
+                self.write("<a href=\"/u/")?;
                 escape_href(&mut self.writer, &dest_url)?;
                 if !title.is_empty() {
                     self.write("\" title=\"")?;
