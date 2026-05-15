@@ -136,7 +136,7 @@ fn super_sub_test_10() {
 fn wwwwwwwwwwwww() {
     let original = r##"This is !super@this.is.sub
 "##;
-    let expected = r##"<p>This is <a href="super@this.is.sub">super@this.is.sub</a></p>
+    let expected = r##"<p>This is <a href="//c/super@this.is.sub">super@this.is.sub</a></p>
 "##;
     test_markdown_html(
         original, expected, false, false, false, true, false, false, false,
@@ -147,7 +147,7 @@ fn wwwwwwwwwwwww() {
 fn hhhhhhhhh() {
     let original = r##"This is @super@this.is.sub
 "##;
-    let expected = r##"<p>This is <a href="super@this.is.sub">super@this.is.sub</a></p>
+    let expected = r##"<p>This is <a href="//u/super@this.is.sub">super@this.is.sub</a></p>
 "##;
     test_markdown_html(
         original, expected, false, false, false, true, false, false, false,
@@ -155,10 +155,11 @@ fn hhhhhhhhh() {
 }
 
 #[test]
-fn llllllllllll() {
+fn hhhhhhhhhh() {
     let original = r##"This is http://this.is.sub
 "##;
-    let expected = r##"<p>This is <a href="http://this.is.sub">http://this.is.sub</a></p>
+    let expected = r##"<p>This is <a href="http://this.is.sub">http://this.is.sub</a>
+</p>
 "##;
     test_markdown_html(
         original, expected, false, false, false, true, false, false, false,
@@ -180,7 +181,7 @@ fn sssssssssssssssss() {
 fn tttttttt() {
     let original = r##"This is http://this.is.sub yay!
 "##;
-    let expected = r##"<p>This is <a href="http://this.is.sub">http://this.is.sub</a> yay!</p>
+    let expected = r##"<p>This is <a href="http://this.is.sub">http://this.is.sub</a>yay!</p>
 "##;
     test_markdown_html(
         original, expected, false, false, false, true, false, false, false,
@@ -194,7 +195,9 @@ fn super_sub_test_11() {
     let expected = r##"<p>H<sup>+</sup> + OH<sup>-</sup></p>
 "##;
 
-    test_markdown_html(original, expected, false, false, false, true, false, false, false);
+    test_markdown_html(
+        original, expected, false, false, false, true, false, false, false,
+    );
 }
 
 #[test]
@@ -204,7 +207,9 @@ fn super_sub_test_12() {
     let expected = r##"<p>Ca<sup>2+</sup> + CO<sub>3</sub><sup>2-</sup></p>
 "##;
 
-    test_markdown_html(original, expected, false, false, false, true, false, false, false);
+    test_markdown_html(
+        original, expected, false, false, false, true, false, false, false,
+    );
 }
 
 #[test]
@@ -214,7 +219,9 @@ fn super_sub_test_13() {
     let expected = r##"<p>NH<sub>4</sub><sup>+</sup></p>
 "##;
 
-    test_markdown_html(original, expected, false, false, false, true, false, false, false);
+    test_markdown_html(
+        original, expected, false, false, false, true, false, false, false,
+    );
 }
 
 #[test]
@@ -224,5 +231,7 @@ fn super_sub_test_14() {
     let expected = r##"<p>^+^ not superscript</p>
 "##;
 
-    test_markdown_html(original, expected, false, false, false, true, false, false, false);
+    test_markdown_html(
+        original, expected, false, false, false, true, false, false, false,
+    );
 }

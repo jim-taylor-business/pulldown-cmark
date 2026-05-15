@@ -1449,20 +1449,14 @@ pub(crate) fn scan_loose_uri(text: &str, start_ix: usize) -> Option<(usize, CowS
         match bytes[i] {
             // b'>' => return Some((start_ix + i + 1, text[start_ix..(start_ix + i)].into())),
             b'\0'..=b' ' | b'<' => {
-                return Some((
-                    start_ix + i + 1,
-                    text[(start_ix - 1)..(start_ix + i)].into(),
-                ))
+                return Some((start_ix + i + 1, text[(start_ix)..(start_ix + i)].into()))
             }
             _ => (),
         }
         i += 1;
     }
 
-    return Some((
-        start_ix + i + 1,
-        text[(start_ix - 1)..(start_ix + i)].into(),
-    ));
+    return Some((start_ix + i + 1, text[(start_ix)..(start_ix + i)].into()));
 }
 
 /// Returns (next_byte_offset, email)

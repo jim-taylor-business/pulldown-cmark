@@ -710,7 +710,7 @@ impl<'input> ParserInner<'input> {
                     if let Some((ix, uri)) = community_link {
                         let node = scan_nodes_to_ix(&self.tree, next, ix);
                         let text_node = self.tree.create_node(Item {
-                            start: self.tree[cur_ix].item.start + 1,
+                            start: self.tree[cur_ix].item.start,
                             end: ix - 1,
                             body: ItemBody::Text {
                                 backslash_escaped: false,
@@ -767,7 +767,6 @@ impl<'input> ParserInner<'input> {
                         }
                         continue;
                     }
-                    // else {
                     self.tree[cur_ix].item.body = ItemBody::Text {
                         backslash_escaped: false,
                     };
@@ -785,7 +784,6 @@ impl<'input> ParserInner<'input> {
                         node: cur_ix,
                         ty: LinkStackTy::Image,
                     });
-                    // }
                 }
                 ItemBody::MaybeLinkClose(could_be_ref) => {
                     self.tree[cur_ix].item.body = ItemBody::Text {

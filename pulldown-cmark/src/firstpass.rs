@@ -1188,16 +1188,25 @@ impl<'a, 'b> FirstPass<'a, 'b> {
                     begin_text = ix + 2;
                     LoopInstruction::ContinueAndSkip(1)
                 }
-                b'!' if bytes.get(ix + 1) != Some(&b'[') && bytes.get(ix + 1) != None => {
-                    self.tree.append_text(begin_text, ix, backslash_escaped);
-                    backslash_escaped = false;
-                    self.tree.append(Item {
-                        start: ix,
-                        end: ix + 1,
-                        body: ItemBody::MaybeImage,
-                    });
-                    begin_text = ix + 1;
-                    LoopInstruction::ContinueAndSkip(1)
+                b'!' if bytes.get(ix + 1) != Some(&b'[') => {
+                    if let Some(c) = bytes.get(ix + 1) {
+                        let d = c.clone();
+                        if is_ascii_alphanumeric(d) {
+                            self.tree.append_text(begin_text, ix, backslash_escaped);
+                            backslash_escaped = false;
+                            self.tree.append(Item {
+                                start: ix,
+                                end: ix + 1,
+                                body: ItemBody::MaybeImage,
+                            });
+                            begin_text = ix + 1;
+                            LoopInstruction::ContinueAndSkip(1)
+                        } else {
+                            LoopInstruction::ContinueAndSkip(0)
+                        }
+                    } else {
+                        LoopInstruction::ContinueAndSkip(0)
+                    }
                 }
                 b'@' => {
                     if ix == 0 {
@@ -1232,53 +1241,110 @@ impl<'a, 'b> FirstPass<'a, 'b> {
                     }
                 }
                 b'h' => {
-                    // if ix < 4 {
-                    //     LoopInstruction::ContinueAndSkip(0)
-                    // } else {
-                    // kind.eq_ignore_ascii_case("spoiler")
-                    if Some(&b't').eq(&bytes.get(ix + 1))
-                        && Some(&b't').eq(&bytes.get(ix + 2))
-                        && Some(&b'p').eq(&bytes.get(ix + 3))
-                    {
-                        if Some(&b's').eq(&bytes.get(ix + 4)) {
-                            if Some(&b':').eq(&bytes.get(ix + 5))
-                                && Some(&b'/').eq(&bytes.get(ix + 6))
-                                && Some(&b'/').eq(&bytes.get(ix + 7))
-                            {
-                                self.tree.append_text(begin_text, ix, backslash_escaped);
-                                backslash_escaped = false;
-                                self.tree.append(Item {
-                                    start: ix,
-                                    end: ix + 1,
-                                    body: ItemBody::MaybeLinkLoose,
-                                });
-                                begin_text = ix + 1;
-                                LoopInstruction::ContinueAndSkip(1)
+                    if ix == 0 {
+                        if Some(&b't').eq(&bytes.get(ix + 1))
+                            && Some(&b't').eq(&bytes.get(ix + 2))
+                            && Some(&b'p').eq(&bytes.get(ix + 3))
+                        {
+                            if Some(&b's').eq(&bytes.get(ix + 4)) {
+                                if Some(&b':').eq(&bytes.get(ix + 5))
+                                    && Some(&b'/').eq(&bytes.get(ix + 6))
+                                    && Some(&b'/').eq(&bytes.get(ix + 7))
+                                {
+                                    self.tree.append_text(begin_text, ix, backslash_escaped);
+                                    backslash_escaped = false;
+                                    self.tree.append(Item {
+                                        start: ix,
+                                        end: ix,
+                                        body: ItemBody::MaybeLinkLoose,
+                                    });
+                                    begin_text = ix;
+                                    LoopInstruction::ContinueAndSkip(0)
+                                } else {
+                                    LoopInstruction::ContinueAndSkip(0)
+                                }
+                            } else {
+                                if Some(&b':').eq(&bytes.get(ix + 4))
+                                    && Some(&b'/').eq(&bytes.get(ix + 5))
+                                    && Some(&b'/').eq(&bytes.get(ix + 6))
+                                {
+                                    self.tree.append_text(begin_text, ix, backslash_escaped);
+                                    backslash_escaped = false;
+                                    self.tree.append(Item {
+                                        start: ix,
+                                        end: ix,
+                                        body: ItemBody::MaybeLinkLoose,
+                                    });
+                                    begin_text = ix;
+                                    LoopInstruction::ContinueAndSkip(0)
+                                } else {
+                                    LoopInstruction::ContinueAndSkip(0)
+                                }
+                            }
+                        } else {
+                            LoopInstruction::ContinueAndSkip(0)
+                        }
+                    } else {
+                        if let Some(c) = bytes.get(ix - 1) {
+                            let d = c.clone();
+                            if is_ascii_whitespace(d) {
+                                if Some(&b't').eq(&bytes.get(ix + 1))
+                                    && Some(&b't').eq(&bytes.get(ix + 2))
+                                    && Some(&b'p').eq(&bytes.get(ix + 3))
+                                {
+                                    if Some(&b's').eq(&bytes.get(ix + 4)) {
+                                        if Some(&b':').eq(&bytes.get(ix + 5))
+                                            && Some(&b'/').eq(&bytes.get(ix + 6))
+                                            && Some(&b'/').eq(&bytes.get(ix + 7))
+                                        {
+                                            self.tree.append_text(
+                                                begin_text,
+                                                ix,
+                                                backslash_escaped,
+                                            );
+                                            backslash_escaped = false;
+                                            self.tree.append(Item {
+                                                start: ix,
+                                                end: ix,
+                                                body: ItemBody::MaybeLinkLoose,
+                                            });
+                                            begin_text = ix;
+                                            LoopInstruction::ContinueAndSkip(0)
+                                        } else {
+                                            LoopInstruction::ContinueAndSkip(0)
+                                        }
+                                    } else {
+                                        if Some(&b':').eq(&bytes.get(ix + 4))
+                                            && Some(&b'/').eq(&bytes.get(ix + 5))
+                                            && Some(&b'/').eq(&bytes.get(ix + 6))
+                                        {
+                                            self.tree.append_text(
+                                                begin_text,
+                                                ix,
+                                                backslash_escaped,
+                                            );
+                                            backslash_escaped = false;
+                                            self.tree.append(Item {
+                                                start: ix,
+                                                end: ix,
+                                                body: ItemBody::MaybeLinkLoose,
+                                            });
+                                            begin_text = ix;
+                                            LoopInstruction::ContinueAndSkip(0)
+                                        } else {
+                                            LoopInstruction::ContinueAndSkip(0)
+                                        }
+                                    }
+                                } else {
+                                    LoopInstruction::ContinueAndSkip(0)
+                                }
                             } else {
                                 LoopInstruction::ContinueAndSkip(0)
                             }
                         } else {
-                            if Some(&b':').eq(&bytes.get(ix + 4))
-                                && Some(&b'/').eq(&bytes.get(ix + 5))
-                                && Some(&b'/').eq(&bytes.get(ix + 6))
-                            {
-                                self.tree.append_text(begin_text, ix, backslash_escaped);
-                                backslash_escaped = false;
-                                self.tree.append(Item {
-                                    start: ix - 1,
-                                    end: ix - 1,
-                                    body: ItemBody::MaybeLinkLoose,
-                                });
-                                begin_text = ix + 1;
-                                LoopInstruction::ContinueAndSkip(1)
-                            } else {
-                                LoopInstruction::ContinueAndSkip(0)
-                            }
+                            LoopInstruction::ContinueAndSkip(0)
                         }
-                    } else {
-                        LoopInstruction::ContinueAndSkip(0)
                     }
-                    // }
                 }
                 b'[' => {
                     self.tree.append_text(begin_text, ix, backslash_escaped);

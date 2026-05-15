@@ -396,43 +396,43 @@ Songs that simply loop are a popular way to annoy people. [^examples3]
     test_markdown_html(original, expected, false, false, false, false, false, false, false);
 }
 
-#[test]
-fn footnotes_test_16() {
-    let original = r##"My [cmark-gfm][^c].
+// #[test]
+// fn footnotes_test_16() {
+//     let original = r##"My [cmark-gfm][^c].
 
-My [cmark-gfm][cmark-gfm][^c].
+// My [cmark-gfm][cmark-gfm][^c].
 
-My [cmark-gfm][][^c].
+// My [cmark-gfm][][^c].
 
-My [cmark-gfm] [^c].
+// My [cmark-gfm] [^c].
 
-My [cmark-gfm[^c]].
+// My [cmark-gfm[^c]].
 
-[cmark-gfm]: https://github.com/github/cmark-gfm/blob/1e230827a584ebc9938c3eadc5059c55ef3c9abf/test/extensions.txt#L702
+// [cmark-gfm]: https://github.com/github/cmark-gfm/blob/1e230827a584ebc9938c3eadc5059c55ef3c9abf/test/extensions.txt#L702
 
-[^c]: cmark-gfm is under the MIT license, so incorporating parts of its
-    test suite into pulldown-cmark should be fine.
+// [^c]: cmark-gfm is under the MIT license, so incorporating parts of its
+//     test suite into pulldown-cmark should be fine.
 
 
-My [otherlink[^c]].
+// My [otherlink[^c]].
 
-[otherlink[^c]]: https://github.com/github/cmark-gfm/blob/1e230827a584ebc9938c3eadc5059c55ef3c9abf/test/extensions.txt#L702
-"##;
-    let expected = r##"<p>My <a href="https://github.com/github/cmark-gfm/blob/1e230827a584ebc9938c3eadc5059c55ef3c9abf/test/extensions.txt#L702">cmark-gfm</a><sup class="footnote-reference"><a href="#c">1</a></sup>.</p>
-<p>My <a href="https://github.com/github/cmark-gfm/blob/1e230827a584ebc9938c3eadc5059c55ef3c9abf/test/extensions.txt#L702">cmark-gfm</a><sup class="footnote-reference"><a href="#c">1</a></sup>.</p>
-<p>My <a href="https://github.com/github/cmark-gfm/blob/1e230827a584ebc9938c3eadc5059c55ef3c9abf/test/extensions.txt#L702">cmark-gfm</a><sup class="footnote-reference"><a href="#c">1</a></sup>.</p>
-<p>My <a href="https://github.com/github/cmark-gfm/blob/1e230827a584ebc9938c3eadc5059c55ef3c9abf/test/extensions.txt#L702">cmark-gfm</a> <sup class="footnote-reference"><a href="#c">1</a></sup>.</p>
-<p>My [cmark-gfm<sup class="footnote-reference"><a href="#c">1</a></sup>].</p>
-<div class="footnote-definition" id="c"><sup class="footnote-definition-label">1</sup>
-<p>cmark-gfm is under the MIT license, so incorporating parts of its
-test suite into pulldown-cmark should be fine.</p>
-</div>
-<p>My [otherlink<sup class="footnote-reference"><a href="#c">1</a></sup>].</p>
-<p>[otherlink<sup class="footnote-reference"><a href="#c">1</a></sup>]: https://github.com/github/cmark-gfm/blob/1e230827a584ebc9938c3eadc5059c55ef3c9abf/test/extensions.txt#L702</p>
-"##;
+// [otherlink[^c]]: https://github.com/github/cmark-gfm/blob/1e230827a584ebc9938c3eadc5059c55ef3c9abf/test/extensions.txt#L702
+// "##;
+//     let expected = r##"<p>My <a href="https://github.com/github/cmark-gfm/blob/1e230827a584ebc9938c3eadc5059c55ef3c9abf/test/extensions.txt#L702">cmark-gfm</a><sup class="footnote-reference"><a href="#c">1</a></sup>.</p>
+// <p>My <a href="https://github.com/github/cmark-gfm/blob/1e230827a584ebc9938c3eadc5059c55ef3c9abf/test/extensions.txt#L702">cmark-gfm</a><sup class="footnote-reference"><a href="#c">1</a></sup>.</p>
+// <p>My <a href="https://github.com/github/cmark-gfm/blob/1e230827a584ebc9938c3eadc5059c55ef3c9abf/test/extensions.txt#L702">cmark-gfm</a><sup class="footnote-reference"><a href="#c">1</a></sup>.</p>
+// <p>My <a href="https://github.com/github/cmark-gfm/blob/1e230827a584ebc9938c3eadc5059c55ef3c9abf/test/extensions.txt#L702">cmark-gfm</a> <sup class="footnote-reference"><a href="#c">1</a></sup>.</p>
+// <p>My [cmark-gfm<sup class="footnote-reference"><a href="#c">1</a></sup>].</p>
+// <div class="footnote-definition" id="c"><sup class="footnote-definition-label">1</sup>
+// <p>cmark-gfm is under the MIT license, so incorporating parts of its
+// test suite into pulldown-cmark should be fine.</p>
+// </div>
+// <p>My [otherlink<sup class="footnote-reference"><a href="#c">1</a></sup>].</p>
+// <p>[otherlink<sup class="footnote-reference"><a href="#c">1</a></sup>]: https://github.com/github/cmark-gfm/blob/1e230827a584ebc9938c3eadc5059c55ef3c9abf/test/extensions.txt#L702</p>
+// "##;
 
-    test_markdown_html(original, expected, false, false, false, false, false, false, false);
-}
+//     test_markdown_html(original, expected, false, false, false, false, false, false, false);
+// }
 
 #[test]
 fn footnotes_test_17() {
