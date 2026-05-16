@@ -1525,7 +1525,10 @@ pub(crate) fn scan_lemmy_link(text: &str, start_ix: usize) -> Option<(usize, Cow
             b'.' | b'!' | b'#' | b'$' | b'%' | b'&' | b'\'' | b'*' | b'+' | b'/' | b'=' | b'?'
             | b'^' | b'_' | b'`' | b'{' | b'|' | b'}' | b'~' | b'-' => (),
             b'@' if i > 1 => break,
-            _ => return None,
+            _ => {
+                i -= 1;
+                break;
+            }
         }
     }
 
@@ -1546,9 +1549,9 @@ pub(crate) fn scan_lemmy_link(text: &str, start_ix: usize) -> Option<(usize, Cow
             i += 1;
         }
 
-        if i == label_start_ix || i - label_start_ix > 63 || bytes[i - 1] == b'-' {
-            return None;
-        }
+        // if i == label_start_ix || i - label_start_ix > 63 || bytes[i - 1] == b'-' {
+        //     return None;
+        // }
 
         if bytes.get(i) != Some(&b'.') {
             break;
