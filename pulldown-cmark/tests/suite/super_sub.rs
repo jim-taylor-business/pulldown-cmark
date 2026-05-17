@@ -155,10 +155,10 @@ fn qqqqqqqqqqq() {
 }
 
 #[test]
-fn wwwwwwwwwwwww() {
-    let original = r##"This is !super@this.is.sub
+fn wwwwwwwwwwwww3333333() {
+    let original = r##"This is !super@this.is.sub end of sentence
 "##;
-    let expected = r##"<p>This is <a href="//c/super@this.is.sub">super@this.is.sub</a></p>
+    let expected = r##"<p>This is <a href="/c/super@this.is.sub">super@this.is.sub</a> end of sentence</p>
 "##;
     test_markdown_html(
         original, expected, false, false, false, true, false, false, false,
@@ -167,9 +167,9 @@ fn wwwwwwwwwwwww() {
 
 #[test]
 fn hhhhhhhhh() {
-    let original = r##"This is @super@this.is.sub
+    let original = r##"This is @super@this.is.sub this must be autocomplete
 "##;
-    let expected = r##"<p>This is <a href="//u/super@this.is.sub">super@this.is.sub</a></p>
+    let expected = r##"<p>This is <a href="/u/super@this.is.sub">super@this.is.sub</a> this must be autocomplete</p>
 "##;
     test_markdown_html(
         original, expected, false, false, false, true, false, false, false,

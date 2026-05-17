@@ -74,6 +74,7 @@ pub(crate) enum ItemBody {
     // bool indicates whether or not the preceding section could be a reference
     MaybeLinkClose(bool),
     MaybeImage,
+    MaybeLemmyCommunity,
     MaybeLemmyUser,
     MaybeLinkLoose,
 
@@ -150,6 +151,7 @@ impl ItemBody {
                 | MaybeLinkOpen
                 | MaybeLinkClose(..)
                 | MaybeImage
+                | MaybeLemmyCommunity
                 | MaybeLemmyUser
                 | MaybeLinkLoose
         )
@@ -166,6 +168,7 @@ impl ItemBody {
                 | MaybeLinkOpen
                 | MaybeLinkClose(..)
                 | MaybeImage
+                | MaybeLemmyCommunity
                 | MaybeLemmyUser
                 | MaybeLinkLoose
                 | Emphasis
@@ -677,7 +680,7 @@ impl<'input> ParserInner<'input> {
                         let node = scan_nodes_to_ix(&self.tree, next, ix);
                         let text_node = self.tree.create_node(Item {
                             start: self.tree[cur_ix].item.start + 1,
-                            end: ix - 1,
+                            end: ix,
                             body: ItemBody::Text {
                                 backslash_escaped: false,
                             },
@@ -735,6 +738,25 @@ impl<'input> ParserInner<'input> {
                     }
                 }
                 ItemBody::MaybeImage => {
+                    self.tree[cur_ix].item.body = ItemBody::Text {
+                        backslash_escaped: false,
+                    };
+                    let link_open_doubled = self.tree[cur_ix]
+                        .next
+                        .map(|ix| self.tree[ix].item.body == ItemBody::MaybeLinkOpen)
+                        .unwrap_or(false);
+                    if self.options.contains(Options::ENABLE_WIKILINKS) && link_open_doubled {
+                        self.wikilink_stack.push(LinkStackEl {
+                            node: cur_ix,
+                            ty: LinkStackTy::Image,
+                        });
+                    }
+                    self.link_stack.push(LinkStackEl {
+                        node: cur_ix,
+                        ty: LinkStackTy::Image,
+                    });
+                }
+                ItemBody::MaybeLemmyCommunity => {
                     let next = self.tree[cur_ix].next;
                     let community_link = if let Some(next_ix) = next {
                         scan_lemmy_link(block_text, self.tree[next_ix].item.start)
@@ -745,7 +767,7 @@ impl<'input> ParserInner<'input> {
                         let node = scan_nodes_to_ix(&self.tree, next, ix);
                         let text_node = self.tree.create_node(Item {
                             start: self.tree[cur_ix].item.start + 1,
-                            end: ix - 1,
+                            end: ix,
                             body: ItemBody::Text {
                                 backslash_escaped: false,
                             },
@@ -767,23 +789,6 @@ impl<'input> ParserInner<'input> {
                         }
                         continue;
                     }
-                    self.tree[cur_ix].item.body = ItemBody::Text {
-                        backslash_escaped: false,
-                    };
-                    let link_open_doubled = self.tree[cur_ix]
-                        .next
-                        .map(|ix| self.tree[ix].item.body == ItemBody::MaybeLinkOpen)
-                        .unwrap_or(false);
-                    if self.options.contains(Options::ENABLE_WIKILINKS) && link_open_doubled {
-                        self.wikilink_stack.push(LinkStackEl {
-                            node: cur_ix,
-                            ty: LinkStackTy::Image,
-                        });
-                    }
-                    self.link_stack.push(LinkStackEl {
-                        node: cur_ix,
-                        ty: LinkStackTy::Image,
-                    });
                 }
                 ItemBody::MaybeLinkClose(could_be_ref) => {
                     self.tree[cur_ix].item.body = ItemBody::Text {
@@ -2721,7 +2726,7 @@ mod test {
     }
 
     #[test]
-    fn footnote_offsets_exclamation() {
+    fn footnote_offsets_exclamationaaaaaa() {
         let mut immediately_before_footnote = None;
         let range = parser_with_extensions("Testing this![^1] out.\n\n[^1]: Footnote.")
             .into_offset_iter()

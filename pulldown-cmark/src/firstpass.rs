@@ -1197,7 +1197,7 @@ impl<'a, 'b> FirstPass<'a, 'b> {
                             self.tree.append(Item {
                                 start: ix,
                                 end: ix + 1,
-                                body: ItemBody::MaybeImage,
+                                body: ItemBody::MaybeLemmyCommunity,
                             });
                             begin_text = ix + 1;
                             LoopInstruction::ContinueAndSkip(1)

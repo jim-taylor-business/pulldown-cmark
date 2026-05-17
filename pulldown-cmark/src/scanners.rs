@@ -1564,7 +1564,7 @@ pub(crate) fn scan_lemmy_link(text: &str, start_ix: usize) -> Option<(usize, Cow
     //     return None;
     // }
 
-    Some((start_ix + i + 1, text[start_ix..(start_ix + i)].into()))
+    Some((start_ix + i, text[start_ix..(start_ix + i)].into()))
 }
 
 /// Scan comment, declaration, or CDATA section, with initial "<!" already consumed.
