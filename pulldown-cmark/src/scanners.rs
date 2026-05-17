@@ -1522,18 +1522,19 @@ pub(crate) fn scan_lemmy_link(text: &str, start_ix: usize) -> Option<(usize, Cow
         i += 1;
         match c {
             c if is_ascii_alphanumeric(c) => (),
-            b'.' | b'!' | b'#' | b'$' | b'%' | b'&' | b'\'' | b'*' | b'+' | b'/' | b'=' | b'?'
-            | b'^' | b'_' | b'`' | b'{' | b'|' | b'}' | b'~' | b'-' => (),
-            b'@' if i > 1 => break,
-            _ => {
+            c if is_ascii_whitespace(c) => {
                 i -= 1;
                 break;
             }
+            b'.' | b'!' | b'#' | b'$' | b'%' | b'&' | b'\'' | b'*' | b'+' | b'/' | b'=' | b'?'
+            | b'^' | b'_' | b'`' | b'{' | b'|' | b'}' | b'~' | b'-' => (),
+            b'@' if i > 1 => break,
+            _ => (),
         }
     }
 
     loop {
-        let label_start_ix = i;
+        // let label_start_ix = i;
         let mut fresh_label = true;
 
         while i < bytes.len() {

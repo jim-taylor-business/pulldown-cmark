@@ -133,6 +133,17 @@ fn super_sub_test_10() {
 }
 
 #[test]
+fn rrrr() {
+    let original = r##"Shinseki Frieren • Cre: @최최
+"##;
+    let expected = r##"
+"##;
+    test_markdown_html(
+        original, expected, false, false, false, true, false, false, false,
+    );
+}
+
+#[test]
 fn qqqqqqqqqqq() {
     let original = r##">Open-source slicing has always been built on a tradition of collaboration and attribution. Slic3r, created by Alessandro Ranellucci and the RepRap community, laid the foundation. PrusaSlicer by Prusa Research built on Slic3r and acknowledged that heritage. Bambu Studio in turn forked from PrusaSlicer, and SuperSlicer by @supermerill extended PrusaSlicer with community-driven enhancements. Each project carried the work of its predecessors forward, crediting those who came before.\n>\n>OrcaSlicer began in that same spirit, drawing from BambuStudio, PrusaSlicer, and ideas inspired by CuraSlicer and SuperSlicer.\n\n[Source](https://github.com/OrcaSlicer/orcaslicer)
 "##;
