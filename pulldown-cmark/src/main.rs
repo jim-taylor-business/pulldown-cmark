@@ -173,6 +173,12 @@ pub fn main() -> std::io::Result<()> {
     if matches.opt_present("enable-container-extensions") {
         opts.insert(Options::ENABLE_CONTAINER_EXTENSIONS);
     }
+    if matches.opt_present("enable-linkify-lemmy") {
+        opts.insert(Options::ENABLE_LINKIFY_LEMMY);
+    }
+    if matches.opt_present("enable-linkify-http") {
+        opts.insert(Options::ENABLE_LINKIFY_HTTP);
+    }
 
     let mut input = String::new();
     let mut broken_links = vec![];

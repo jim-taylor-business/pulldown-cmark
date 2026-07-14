@@ -1188,7 +1188,9 @@ impl<'a, 'b> FirstPass<'a, 'b> {
                     begin_text = ix + 2;
                     LoopInstruction::ContinueAndSkip(1)
                 }
-                b'!' if bytes.get(ix + 1) != Some(&b'[') => {
+                b'!' if bytes.get(ix + 1) != Some(&b'[')
+                    && self.options.contains(Options::ENABLE_LINKIFY_LEMMY) =>
+                {
                     if let Some(c) = bytes.get(ix + 1) {
                         let d = c.clone();
                         if is_ascii_alphanumeric(d) {
@@ -2661,7 +2663,7 @@ fn create_lut(options: &Options) -> LookupTable {
 fn special_bytes(options: &Options) -> [bool; 256] {
     let mut bytes = [false; 256];
     let standard_bytes = [
-        b'\n', b'\r', b'*', b'_', b'&', b'\\', b'[', b']', b'<', b'!', b'`', b'@', b'h',
+        b'\n', b'\r', b'*', b'_', b'&', b'\\', b'[', b']', b'<', b'!', b'`',
     ];
 
     for &byte in &standard_bytes {
@@ -2687,6 +2689,12 @@ fn special_bytes(options: &Options) -> [bool; 256] {
         for &byte in &[b'.', b'-', b'"', b'\''] {
             bytes[byte as usize] = true;
         }
+    }
+    if options.contains(Options::ENABLE_LINKIFY_HTTP) {
+        bytes[b'h' as usize] = true;
+    }
+    if options.contains(Options::ENABLE_LINKIFY_LEMMY) {
+        bytes[b'@' as usize] = true;
     }
 
     bytes

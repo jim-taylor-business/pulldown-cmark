@@ -772,6 +772,10 @@ bitflags::bitflags! {
         const ENABLE_WIKILINKS = 1 << 15;
         /// Colon-delimited Container Extension Blocks.
         const ENABLE_CONTAINER_EXTENSIONS = 1 << 16;
+        /// Lemmy links
+        const ENABLE_LINKIFY_LEMMY = 1 << 17;
+        /// Linkify HTTP URLs
+        const ENABLE_LINKIFY_HTTP = 1 << 18;
     }
 }
 
